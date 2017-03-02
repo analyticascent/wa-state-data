@@ -5,17 +5,37 @@ This will take in the WA State RCW page and extract all the links to the specifi
 from bs4 import BeautifulSoup, SoupStrainer
 import requests # a reliable way of making requests
 
+# homepage = raw_input('Enter the regulation homepage: ')
+
 soup = requests.get('http://apps.leg.wa.gov/rcw/')
+
+# default = raw_input('Enter the URL extension for the Titles: ')
+
+default = 'default.aspx?Cite='
 
 urls = []
 
 for link in BeautifulSoup(soup.content, "html.parser", parse_only=SoupStrainer('a', href=True)):
         urls.append(link['href'])
 
-sublinks = set()
+sublinks = []
 
 for link in urls:
-    if link.startswith('default.aspx?Cite='):
-        sublinks.add(link)
-        
+    if link.startswith(default):
+        sublinks.append(link)
+
 print sublinks
+print
+print str(len(sublinks)) + " Regulatory Titles"
+print
+
+def full_url(sublinks):
+    full_urls = []
+    for link in sublinks:
+        link = 'http://apps.leg.wa.gov/rcw/' + link
+        full_urls.append(link)
+    return full_urls
+
+print full_url(sublinks)
+print
+print str(len(full_url(sublinks))) + ' Regulatory Title Links'
